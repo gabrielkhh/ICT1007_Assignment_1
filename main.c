@@ -113,7 +113,9 @@ void main()
 }
 
 void processReadyQueue() {
+    //m to keep track of the number of tasks in the ready queue at this point of time.
     int m = 0;
+    //startOffset is the number of processes that have been processed earlier before this cycle started.
     int startOffset = countTrack;
 
     //Populate the ready queue
@@ -134,11 +136,9 @@ void processReadyQueue() {
         proposedRoundRobin(m, startOffset);
 
         if (countTrack != n) {
-            //Not all processes have been done.
+            //Not all processes have been done. Using recursion to check what tasks should be in the ready queue.
             processReadyQueue();
         }
-
-
     } else {
         //Only one process in ready queue
         t = MainReadyQueue[0][0];
@@ -149,7 +149,7 @@ void processReadyQueue() {
         turnaroundTime[countTrack - 1][1] = MainReadyQueue[0][1];
 
         if (countTrack != n) {
-            //Not all processes have been done.
+            //Not all processes have been done. Using recursion to check what tasks should be in the ready queue.
             processReadyQueue();
         }
     }
@@ -178,10 +178,10 @@ void sortTurnAroundTime() {
 }
 
 void proposedRoundRobin(int m, int startOffset) {
-    /* This function contains the logic for the proposed Round Robin algorithm where processes are divided
-     * into LTQ (Light task queue) and HTQ (Heavy task queue) based on the MBT (Medium burst time) of all processes
-     * and then cleared in the following order LTQ then HTQ. Burst time for each queue is also based on the MBT of the
-     * queue. */
+    /* This function contains the logic for the proposed Round Robin algorithm where processes are sorted in ascending order
+     * based on their burst time and then divided into LTQ (Light task queue) and HTQ (Heavy task queue) based on the
+     * MBT (Medium burst time) of all processes and then cleared in the following order LTQ then HTQ. Burst time for each
+     * queue is also based on the MBT of the queue. */
 
     //Sort the readyqueue in ascending order based on burst time of processes.
     for (i = 0; i < m; i++)
