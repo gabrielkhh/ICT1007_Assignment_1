@@ -21,30 +21,51 @@ void proposedRoundRobin(int m, int startOffset);
 
 void main()
 {
+    char arr;
+
     printf("Enter the no of processes: ");
     scanf("%d", &n);
 
-    for (i = 0; i < n; i++)
-    {
-        //Get the burst time for each process
-        printf("\nEnter Burst Time for process %d: ", i + 1);
-        scanf("%d", &ProcessData[i][0]);
-        ProcessData[i][1] = i + 1;
-        printf("\nEnter Arrival Time for process %d: ", i + 1);
-        scanf("%d", &ProcessData[i][2]);
-        ArrTime[i] = ProcessData[i][2];
-        staticBurst[i] = ProcessData[i][0];
+    while (arr != 'Y' && arr != 'y' && arr != 'N' && arr != 'n') {
+        printf("\nDo all processes have the same arrival time of 0? Reply with y/n: ");
+        scanf(" %c", &arr);
     }
 
-    //Check if the arrival time for all the processes are the same or varying.
-    for (i = 0; i < n; i++) {
-        if (ProcessData[i][2] != 0) {
-            AllArrivalSame = false;
-            break;
+    if (arr == 'Y' || arr == 'y') {
+        //User indicated that all processes will arrive at t = 0
+        AllArrivalSame = true;
+    } else if (arr == 'N' || arr == 'n') {
+        //User did not indicate that all processes will arrive at t = 0
+        AllArrivalSame = false;
+    }
+
+    if (AllArrivalSame) {
+        for (i = 0; i < n; i++)
+        {
+            //Get the burst time for each process
+            printf("\nEnter Burst Time for process %d: ", i + 1);
+            scanf("%d", &ProcessData[i][0]);
+            ProcessData[i][1] = i + 1;
+            ProcessData[i][2] = 0;
+            ArrTime[i] = 0;
+            staticBurst[i] = ProcessData[i][0];
+        }
+    } else {
+        for (i = 0; i < n; i++)
+        {
+            //Get the burst time for each process
+            printf("\nEnter Burst Time for process %d: ", i + 1);
+            scanf("%d", &ProcessData[i][0]);
+            ProcessData[i][1] = i + 1;
+            printf("\nEnter Arrival Time for process %d: ", i + 1);
+            scanf("%d", &ProcessData[i][2]);
+            ArrTime[i] = ProcessData[i][2];
+            staticBurst[i] = ProcessData[i][0];
         }
     }
 
     if (AllArrivalSame == true) {
+        /* For the scenario where all processes arrive at time = 0 */
         //Populate the ready queue
         for (int g = 0; g < n; g++) {
             MainReadyQueue[g][0] = ProcessData[g][0];
