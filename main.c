@@ -8,7 +8,7 @@ int i, j, n, totalBurst, ProcessData[10][3], staticBurst[10], ArrTime[10];
 int countTrack = 0;
 int LTQTrack = 0;
 int HTQTrack = 0;
-//Light Task Queue(LTQ), Heavy Task Queue(HTQ)
+//Light Task Queue(LTQ), Heavy Task Queue(HTQ), Medium Burst Time(MBT)
 float awt = 0, att = 0, MBT = 0, t = 0, max = 0, temp = 0, turnaroundTime[10][2], LTQ[10][3], HTQ[10][3], tempMove[2], waitingTime[10];
 float MainReadyQueue[10][3];
 
@@ -213,10 +213,10 @@ void proposedRoundRobin(int m, int startOffset) {
     for (int k = 0; k < LTQTrack; k++) {
         totalBurst += LTQ[k][0];
     }
-    //The time quantum for LTQ which is equals to the MBT of LTQ.
+    //The time quantum for LTQ (Light Task Queue) which is equals to the MBT (Medium Burst Time) of LTQ.
     t = (float)totalBurst / (float)LTQTrack;
 
-    //Know the max burst time in this queue (LTQ).
+    //Know the max burst time in this queue (LTQ Light Task Queue).
     max = LTQ[LTQTrack - 1][0];
 
     //This is the juicy part, The heart and soul of RR. We will clear LTQ first.
@@ -276,10 +276,10 @@ void proposedRoundRobin(int m, int startOffset) {
     for (int k = 0; k < HTQTrack; k++) {
         totalBurst += HTQ[k][0];
     }
-    //The time quantum for HTQ which is equals to the MBT of HTQ.
+    //The time quantum for HTQ (Heavy Task Queue) which is equals to the MBT (Medium Burst Time) of HTQ.
     t = (float)totalBurst / (float)HTQTrack;
 
-    //Know the max burst time in this queue (HTQ).
+    //Know the max burst time in this queue (HTQ Heavy Task Queue).
     max = HTQ[HTQTrack - 1][0];
 
     //RR logic lai liao. Now clear HTQ with RR.
