@@ -40,6 +40,7 @@ void main()
     }
 
     if (AllArrivalSame) {
+        /* For the scenario where all processes arrive at time = 0 */
         for (i = 0; i < n; i++)
         {
             //Get the burst time for each process
@@ -50,22 +51,7 @@ void main()
             ArrTime[i] = 0;
             staticBurst[i] = ProcessData[i][0];
         }
-    } else {
-        for (i = 0; i < n; i++)
-        {
-            //Get the burst time for each process
-            printf("\nEnter Burst Time for process %d: ", i + 1);
-            scanf("%d", &ProcessData[i][0]);
-            ProcessData[i][1] = i + 1;
-            printf("\nEnter Arrival Time for process %d: ", i + 1);
-            scanf("%d", &ProcessData[i][2]);
-            ArrTime[i] = ProcessData[i][2];
-            staticBurst[i] = ProcessData[i][0];
-        }
-    }
 
-    if (AllArrivalSame == true) {
-        /* For the scenario where all processes arrive at time = 0 */
         //Populate the ready queue
         for (int g = 0; g < n; g++) {
             MainReadyQueue[g][0] = ProcessData[g][0];
@@ -78,14 +64,26 @@ void main()
 
         //Sorting the turnaroundTime array so that we can print the results in running order based on Process No#.
         sortTurnAroundTime();
+
     } else {
         //The processes have varying arrival time.
+        for (i = 0; i < n; i++)
+        {
+            //Get the burst time for each process
+            printf("\nEnter Burst Time for process %d: ", i + 1);
+            scanf("%d", &ProcessData[i][0]);
+            ProcessData[i][1] = i + 1;
+            printf("\nEnter Arrival Time for process %d: ", i + 1);
+            scanf("%d", &ProcessData[i][2]);
+            ArrTime[i] = ProcessData[i][2];
+            staticBurst[i] = ProcessData[i][0];
+        }
+
         processReadyQueue();
 
         //Sorting the turnaroundTime array so that we can print the results in running order based on Process No#.
         sortTurnAroundTime();
     }
-
 
     // Calculate and print the waiting time and the turnaround time for each process.
     temp = 0;
