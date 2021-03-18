@@ -21,7 +21,7 @@ void proposedRoundRobin(int m, int startOffset);
 
 void main()
 {
-    char arr;
+    char arr = '?';
 
     printf("Enter the no of processes: ");
     scanf("%d", &n);
@@ -59,6 +59,8 @@ void main()
             MainReadyQueue[g][2] = ProcessData[g][2];
         }
 
+        printf("Gantt Chart:\n");
+
         //Run the proposed RR algorithm, pass in n as number of processes in ready queue, 0 as there was no process that was computed before this cycle.
         proposedRoundRobin(n, 0);
 
@@ -79,11 +81,17 @@ void main()
             staticBurst[i] = ProcessData[i][0];
         }
 
+        printf("Gantt Chart:\n");
+
+        //Start checking the Ready Queue and processing the tasks
         processReadyQueue();
 
         //Sorting the turnaroundTime array so that we can print the results in running order based on Process No#.
         sortTurnAroundTime();
     }
+
+    // Print new lines as gantt chart is done printing.
+    printf("\n\n");
 
     // Calculate and print the waiting time and the turnaround time for each process.
     temp = 0;
@@ -147,6 +155,8 @@ void processReadyQueue() {
         //turnaroundTime[x][0] is the turnaround time (waiting time + burst time) for each process. turnaroundTime[x][1] is the process no. #
         turnaroundTime[countTrack - 1][0] = temp - MainReadyQueue[0][2];
         turnaroundTime[countTrack - 1][1] = MainReadyQueue[0][1];
+        //For printing out the gantt chart
+        printf("| P%d (%.2f) ", (int)MainReadyQueue[0][1], temp);
 
         if (countTrack != n) {
             //Not all processes have been done. Using recursion to check what tasks should be in the ready queue.
@@ -259,6 +269,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //Because the remaining burst time is =< 0, after running the process, the remaining burst time must be 0, indicating
                     //that the process has completed.
                     LTQ[i][0] = 0;
+                    //For printing out the gantt chart
+                    printf("| P%d (%.2f) ", (int)LTQ[i][1], temp);
                 }
                 else
                 {
@@ -266,6 +278,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //To be more than 0 after this cycle.
                     LTQ[i][0] = LTQ[i][0] - t;
                     temp = temp + t;
+                    //For printing out the gantt chart
+                    printf("| P%d (%.2f) ", (int)LTQ[i][1], temp);
                 }
             }
         }
@@ -321,6 +335,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //Because the remaining burst time is =< 0, after running the process, the remaining burst time must be 0, indicating
                     //that the process has completed.
                     HTQ[i][0] = 0;
+                    //For printing out the gantt chart
+                    printf("| P%d (%.2f) ", (int)HTQ[i][1], temp);
                 }
                 else
                 {
@@ -328,6 +344,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //To be more than 0 after this cycle.
                     HTQ[i][0] = HTQ[i][0] - t;
                     temp = temp + t;
+                    //For printing out the gantt chart
+                    printf("| P%d (%.2f) ", (int)HTQ[i][1], temp);
                 }
             }
         }
