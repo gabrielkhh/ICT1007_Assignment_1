@@ -2,10 +2,10 @@
 #include <stdbool.h>
 
 /* int n is the number of processes. int i and j are used as indices in for loops.
-ProcessData[x][3] stores info like this [[BurstTime, ProcessNo#, Arrival Time],[BurstTime, ProcessNo#, Arrival Time]...]
+ProcessData[x][3] stores info like this [[BurstTime, ProcessNo#, Arrival Time, isDone(bool)],[BurstTime, ProcessNo#, Arrival Time, isDone(bool)]...]
 staticBurst[] stores the Burst time for each process as is with no change to the data.
 ArrTime[] Stores the arrival time for each process. */
-int i, j, n, totalBurst, ProcessData[10][3], staticBurst[10], ArrTime[10];
+int i, j, n, totalBurst, ProcessData[10][4], staticBurst[10], ArrTime[10];
 // Counter variables.
 int countTrack = 0;
 int LTQTrack = 0;
@@ -16,8 +16,8 @@ tempMove[] helps to store data when rearranging data around.
 waitingTime[] stores the waiting time of each process. */
 float awt = 0, att = 0, MBT = 0, t = 0, max = 0, temp = 0, turnaroundTime[10][2], LTQ[10][3], HTQ[10][3], tempMove[2], waitingTime[10];
 /* MainReadyQueue[][] will contain any process that is in the ready queue at a point in time.
-The format of MainReadyQueue[][] is as follows [[BurstTime, ProcessNo#, ArrTime], [BurstTime, ProcessNo#, ArrTime]] */
-float MainReadyQueue[10][3];
+The format of MainReadyQueue[][] is as follows [[BurstTime, ProcessNo#, ArrTime, isDone(bool)], [BurstTime, ProcessNo#, ArrTime, isDone(bool)]] */
+float MainReadyQueue[10][4];
 
 // Boolean variable to know if all processes arrive at the same time or have varying arrival time.
 bool AllArrivalSame = true;
@@ -89,6 +89,7 @@ void main()
             printf("\nEnter Arrival Time for process %d: ", i + 1);
             scanf("%d", &ProcessData[i][2]);
             ArrTime[i] = ProcessData[i][2];
+            ProcessData[i][3] = 0;
             staticBurst[i] = ProcessData[i][0];
         }
 
@@ -140,11 +141,12 @@ void processReadyQueue() {
     int startOffset = countTrack;
 
     //Populate the ready queue
-    for (int g = countTrack; g < n; g++) {
-        if (ProcessData[g][2] <= temp) {
+    for (int g = 0; g < n; g++) {
+        if ((ProcessData[g][2] <= temp) && (ProcessData[g][3] == 0)) {
             MainReadyQueue[m][0] = ProcessData[g][0];
             MainReadyQueue[m][1] = ProcessData[g][1];
             MainReadyQueue[m][2] = ProcessData[g][2];
+            MainReadyQueue[m][3] = ProcessData[g][3];
             m++;
             countTrack++;
         }
@@ -168,6 +170,8 @@ void processReadyQueue() {
         //turnaroundTime[x][0] is the turnaround time (waiting time + burst time) for each process. turnaroundTime[x][1] is the process no. #
         turnaroundTime[countTrack - 1][0] = temp - MainReadyQueue[0][2];
         turnaroundTime[countTrack - 1][1] = MainReadyQueue[0][1];
+        // Set the isDone flag for the process to true to mark it as done.
+        ProcessData[(int)MainReadyQueue[0][1] - 1][3] = 1;
         //For printing out the gantt chart
         printf("| P%d (%.2f) ", (int)MainReadyQueue[0][1], temp);
         //Increment Context Switch count by 1
@@ -284,6 +288,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //Because the remaining burst time is =< 0, after running the process, the remaining burst time must be 0, indicating
                     //that the process has completed.
                     LTQ[i][0] = 0;
+                    // Set the isDone flag for the process to true to mark it as done.
+                    ProcessData[(int)LTQ[i][1] - 1][3] = 1;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)LTQ[i][1], temp);
                     //Increment Context Switch count by 1
@@ -354,6 +360,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     //Because the remaining burst time is =< 0, after running the process, the remaining burst time must be 0, indicating
                     //that the process has completed.
                     HTQ[i][0] = 0;
+                    // Set the isDone flag for the process to true to mark it as done.
+                    ProcessData[(int)HTQ[i][1] - 1][3] = 1;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)HTQ[i][1], temp);
                     //Increment Context Switch count by 1
