@@ -1,32 +1,43 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-/*int n is the number of processes.
-ProcessData[x][2] stores info like this [[BurstTime, ProcessNo#, Arrival Time],[BurstTime, ProcessNo#, Arrival Time]...]
-array ct[i] is like the static burst time for each process before process is started to calculate total waiting time later on.*/
+/* int n is the number of processes. int i and j are used as indices in for loops.
+ProcessData[x][3] stores info like this [[BurstTime, ProcessNo#, Arrival Time],[BurstTime, ProcessNo#, Arrival Time]...]
+staticBurst[] stores the Burst time for each process as is with no change to the data.
+ArrTime[] Stores the arrival time for each process. */
 int i, j, n, totalBurst, ProcessData[10][3], staticBurst[10], ArrTime[10];
+// Counter variables.
 int countTrack = 0;
 int LTQTrack = 0;
 int HTQTrack = 0;
-//Light Task Queue(LTQ), Heavy Task Queue(HTQ), Medium Burst Time(MBT)
+int contextSwitch = 0;
+/* Light Task Queue(LTQ), Heavy Task Queue(HTQ), Medium Burst Time(MBT)
+tempMove[] helps to store data when rearranging data around.
+waitingTime[] stores the waiting time of each process. */
 float awt = 0, att = 0, MBT = 0, t = 0, max = 0, temp = 0, turnaroundTime[10][2], LTQ[10][3], HTQ[10][3], tempMove[2], waitingTime[10];
+/* MainReadyQueue[][] will contain any process that is in the ready queue at a point in time.
+The format of MainReadyQueue[][] is as follows [[BurstTime, ProcessNo#, ArrTime], [BurstTime, ProcessNo#, ArrTime]] */
 float MainReadyQueue[10][3];
 
+// Boolean variable to know if all processes arrive at the same time or have varying arrival time.
 bool AllArrivalSame = true;
 
-//Function Prototypes
+// Function Prototypes
 void processReadyQueue();
 void sortTurnAroundTime();
 void proposedRoundRobin(int m, int startOffset);
 
 void main()
 {
+    // Character to store the yes or no input from user later on.
     char arr = '?';
 
+    //Get the number of processes from user.
     printf("Enter the no of processes: ");
     scanf("%d", &n);
 
     while (arr != 'Y' && arr != 'y' && arr != 'N' && arr != 'n') {
+        // Get input from user to know if all processes have the same arrival time or not.
         printf("\nDo all processes have the same arrival time of 0? Reply with y/n: ");
         scanf(" %c", &arr);
     }
@@ -97,7 +108,7 @@ void main()
     temp = 0;
     for (i = 0; i < n; i++)
     {
-        //temp will store the cumulative waiting time which is = to turnaround time - burst time.
+        //temp will store the cumulative waiting time which is = turnaround time - burst time.
         temp = turnaroundTime[i][0] - (float)staticBurst[i];
         waitingTime[i] = temp;
         printf("Process %d waiting time is %.2f and turnaround time is %.2f\n", (i + 1), temp, turnaroundTime[i][0]);
@@ -118,6 +129,8 @@ void main()
 
     printf("Average waiting time is %.2f\n", awt);
     printf("Average turnaround time is %.2f\n", att);
+
+    printf("Number of context switches : %d\n", contextSwitch - 1);
 }
 
 void processReadyQueue() {
@@ -157,6 +170,8 @@ void processReadyQueue() {
         turnaroundTime[countTrack - 1][1] = MainReadyQueue[0][1];
         //For printing out the gantt chart
         printf("| P%d (%.2f) ", (int)MainReadyQueue[0][1], temp);
+        //Increment Context Switch count by 1
+        contextSwitch++;
 
         if (countTrack != n) {
             //Not all processes have been done. Using recursion to check what tasks should be in the ready queue.
@@ -193,7 +208,7 @@ void proposedRoundRobin(int m, int startOffset) {
      * MBT (Medium burst time) of all processes and then cleared in the following order LTQ then HTQ. Burst time for each
      * queue is also based on the MBT of the queue. */
 
-    //Sort the readyqueue in ascending order based on burst time of processes.
+    //Sort the ready queue in ascending order based on burst time of processes.
     for (i = 0; i < m; i++)
     {
         for (j = i + 1; j < m; j++)
@@ -271,6 +286,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     LTQ[i][0] = 0;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)LTQ[i][1], temp);
+                    //Increment Context Switch count by 1
+                    contextSwitch++;
                 }
                 else
                 {
@@ -280,6 +297,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     temp = temp + t;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)LTQ[i][1], temp);
+                    //Increment Context Switch count by 1
+                    contextSwitch++;
                 }
             }
         }
@@ -337,6 +356,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     HTQ[i][0] = 0;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)HTQ[i][1], temp);
+                    //Increment Context Switch count by 1
+                    contextSwitch++;
                 }
                 else
                 {
@@ -346,6 +367,8 @@ void proposedRoundRobin(int m, int startOffset) {
                     temp = temp + t;
                     //For printing out the gantt chart
                     printf("| P%d (%.2f) ", (int)HTQ[i][1], temp);
+                    //Increment Context Switch count by 1
+                    contextSwitch++;
                 }
             }
         }

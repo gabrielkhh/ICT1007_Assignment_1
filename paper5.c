@@ -3,7 +3,7 @@
 #define LOW_BT 200
 
 // i and j used in for loops, n is the number of processes. JQ[i] is the Job Queue Flag.
-int i, j, n, doneProcesses, JQ[10], MainReadyQueue[10][4];
+int i, j, n, doneProcesses, JQ[10], MainReadyQueue[10][4], contextSwitches;
 /* Format is something like MainReadyQueue[[ProcessNo#, BurstTime, ArrTime, Priority], [ProcessNo#, BurstTime, ArrTime, Priority]]
 lowTQ, medTQ, highTQ is the TQ for the various priorities and the s suffix infront is for the if statements */
 float TQ = 0, lowTQ = 0, highTQ = 0, sLowTQ = 0, sMedTQ = 0, sHighTQ = 0, effectiveTQ = 0, sEffectiveTQ = 0, remainingBurstTime[10][2], tat[10], wt[10];
@@ -64,6 +64,7 @@ void main()
             wt[i] = tat[i] - (float)MainReadyQueue[i][1];
             JQ[i] = 1;
             doneProcesses++;
+            contextSwitches++;
             //For gantt chart
             printf("|\tP%d (%.2f)", i + 1, t);
         }
@@ -100,6 +101,7 @@ void main()
                     wt[i] = tat[i] - (float)MainReadyQueue[i][1];
                     JQ[i] = 1;
                     doneProcesses++;
+                    contextSwitches++;
                     //For gantt chart
                     printf("|\tP%d (%.2f)", i + 1, t);
                 } else if ((MainReadyQueue[i][3] == 1 || MainReadyQueue[i][3] == 2) && (JQ[i] == 0)) {
@@ -114,12 +116,14 @@ void main()
                         wt[i] = tat[i] - (float)MainReadyQueue[i][1];
                         JQ[i] = 1;
                         doneProcesses++;
+                        contextSwitches++;
                         //For gantt chart
                         printf("|\tP%d (%.2f)", i + 1, t);
                     } else {
                         //Just run for its assigned TQ..
                         t += effectiveTQ;
                         remainingBurstTime[i][1] = remainingBurstTime[i][1] - effectiveTQ;
+                        contextSwitches++;
                         //For gantt chart
                         printf("|\tP%d (%.2f)", i + 1, t);
                     }
@@ -135,11 +139,13 @@ void main()
                         wt[i] = tat[i] - (float)MainReadyQueue[i][1];
                         JQ[i] = 1;
                         doneProcesses++;
+                        contextSwitches++;
                         printf("|\tP%d (%.2f)", i + 1, t);
                     } else {
                         //Just run for its assigned TQ..
                         t += effectiveTQ;
                         remainingBurstTime[i][1] = remainingBurstTime[i][1] - effectiveTQ;
+                        contextSwitches++;
                         //For gantt chart
                         printf("|\tP%d (%.2f)", i + 1, t);
                     }
@@ -171,4 +177,5 @@ void main()
 
     printf("Average waiting time is %.2f\n", awt);
     printf("Average turnaround time is %.2f\n", atat);
+    printf("Number of context switches : %d\n", contextSwitches - 1);
 }
