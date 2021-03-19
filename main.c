@@ -72,7 +72,8 @@ void main()
 
         printf("Gantt Chart:\n");
 
-        //Run the proposed RR algorithm, pass in n as number of processes in ready queue, 0 as there was no process that was computed before this cycle.
+        /* Run the proposed RR algorithm, pass in n as number of processes in ready queue, 0 for the startOffset
+        as there was no process that was computed before this cycle. */
         proposedRoundRobin(n, 0);
 
         //Sorting the turnaroundTime array so that we can print the results in running order based on Process No#.
@@ -242,6 +243,7 @@ void proposedRoundRobin(int m, int startOffset) {
     LTQTrack = 0;
     HTQTrack = 0;
     for (i = 0; i < m; i++) {
+        // If Burst Time is less than Medium Burst Time
         if ((float)MainReadyQueue[i][0] < MBT) {
             //Put in LTQ
             LTQ[LTQTrack][0] = (float)MainReadyQueue[i][0];
@@ -267,7 +269,7 @@ void proposedRoundRobin(int m, int startOffset) {
     //Know the max burst time in this queue (LTQ Light Task Queue).
     max = LTQ[LTQTrack - 1][0];
 
-    //This is the juicy part, The heart and soul of RR. We will clear LTQ first.
+    //This is the juicy part, The heart and soul of RR. We will clear LTQ first according to the Research Paper.
     //for loop where it loops for the maximum no. of times a process will ever need to queue again.
     for (j = 0; j < (max / t) + 1; j++)
     {
